@@ -30,7 +30,7 @@ const create = async (req, res, next) => {
 
 const update = async (req, res, next) => {
     try {
-        let messageToUpdate = await Message.findOne({where:{id: req.params.id}});
+        let messageToUpdate = await Message.findOne({where: { id: req.payload.id },});
         
         if(messageToUpdate.userId !== req.payload.id){
             res.status(403).json({error: "Vous ne pouvez pas modifier ce message"});
@@ -49,7 +49,7 @@ const update = async (req, res, next) => {
 }
 
 const remove = async (req, res, next) => {
-    let messageToUpdate = await Message.findOne({where:{id: req.params.id}});
+    let messageToUpdate = await Message.findOne({where:{id: req.payload.id}});
 
     if(messageToUpdate.userId !== req.payload.id){
         res.status(403).json({error: "Vous ne pouvez pas supprimer ce message"});

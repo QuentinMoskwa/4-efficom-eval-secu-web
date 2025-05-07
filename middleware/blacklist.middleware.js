@@ -7,4 +7,4 @@ const blacklistedIps = JSON.parse(fs.readFileSync(blacklistFilePath, "utf-8"));
 
 const ipBlacklist = IpFilter(blacklistedIps, { mode: "deny" });
 
-module.exports = blacklist;
+module.exports = ipBlacklist;
