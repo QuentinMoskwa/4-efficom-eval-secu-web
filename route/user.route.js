@@ -9,7 +9,7 @@ router.get('/:id', userController.getById);
 router.post('/', userController.create);
 
 router.put('/:id', userController.update);
-router.delete('/:id', userController.remove);
+router.delete('/:id', auth("Admin"), userController.remove);
 
 router.put('/role/:userId/:roleId', auth("Admin"), userController.addRole);
 router.delete('/role/:userId/:roleId', auth("Admin"),userController.removeRole);

@@ -6,6 +6,11 @@ const messageRouter = require('./route/message.route.js');
 const roleRouter = require('./route/role.route.js');
 const {connect} = require('./framework/connection.js');
 const sync = require('./framework/sync.js');
+const limiter = require("./../middleware/rateLimit.middleware.js");
+const log = require("./middleware/log.middleware.js");
+const logres = require("./middleware/logres.middleware.js");
+const ipBlacklist = require("./middleware/blacklist.middleware.js");
+
 
 const database = async () => {
     await connect();
@@ -15,6 +20,10 @@ const database = async () => {
 database();
 
 app.use(express.json());
+app.use(limiter(1, 5));
+app.use(log);
+app.use(ipBlacklist);
+app.use(logres);
 
 app.use('/user',userRouter);
 app.use('/auth',authRouter);
