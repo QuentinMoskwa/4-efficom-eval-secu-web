@@ -25,7 +25,7 @@ const create = async (req, res, next) => {
     try {
         let result = await User.create({
             email: req.body.email,
-            password: bcrypt.hashSync(req.body.password, 4),
+            password: bcrypt.hashSync(req.body.password, 10),
             roles: [member.id]
         });
         res.status(201).json(result);
@@ -34,15 +34,39 @@ const create = async (req, res, next) => {
     }
 }
 
-const update = (req, res, next) => {
-    let result = User.updateOne(req.body, { id: req.params.id });
-    res.status(201).json(result);
+const update = async (req, res, next) => {
+    let userToUpdate = await User.getById(req.params.id);
+    if (userToUpdate.id !== req.payload.id) {
+      res.status(403).json({ error: "Vous ne pouvez pas modifier cet utilisateur" });
+    }
+    try {
+        req.body.password = bcrypt.hashSync(req.body.password, 10)
+    } catch (e) {
+        return res.status(400).json({ error: "Erreur lors du hashage du mot de passe." });
+    }
+    try {
+        const user = await User.updateOne(req.body, {
+            where: {
+                id: req.params.id
+            }
+        });
+        return res.status(201).json(user);
+    } catch (e) {
+        return res.status(404).json(e.message);
+    }
 }
 
-const remove = (req, res, next) => {
-    let result = User.remove(req.params.id);
-    res.status(200).json(result);
-}
+const remove = async (req, res) => {
+    let result = await User.destroy({
+    where: {
+        id: req.params.id,
+        },
+    });
+    if (result !== 1) {
+        res.status(404).json({ error: "User not found" });
+    }
+    return res.status(204).json({ message: "User deleted" });
+};
 
 const addRole = async (req, res, next) => {
     try {
